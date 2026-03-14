@@ -44,7 +44,8 @@ proc install() =
     echo "Source extracted."  
 
     if fileExists(fmt"{TMP}/{PKG}/depends"):
-        for i in readFile(fmt"{TMP}/{PKG}/depends").splitLines():
+        for dep in readFile(fmt"{TMP}/{PKG}/depends").splitLines():
+            let i = dep.strip()
             if fileExists(fmt"/var/forge/world/{i}"):
                 echo fmt"Dependency {i} is already installed, skipping."
                 continue
