@@ -1,6 +1,6 @@
 version       = "1.0.0"
-author        = "Your Name"
-description   = "A new awesome Nimble package"
+author        = "okthela"
+description   = "the package manager for ohlinux (fr this time)"
 license       = "BSD-3-Clause"
 srcDir        = "src"
 bin           = @["forge"]
