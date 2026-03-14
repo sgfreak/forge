@@ -60,5 +60,18 @@ proc install() =
     writeFile(fmt"/var/forge/world/{PKG}", "")
     echo fmt"{PKG} has been installed successfully."
     
+proc remove() =
+    let tbr = readFile(fmt"/var/forge/world/{PKG}_installed").splitLines()
+    for item in tbr:
+        discard execCmd(fmt"rm -rfv {item}")
+    echo "Deregestering from world set."
+    discard execCmd(fmt"rm -rfv /var/forge/world/{PKG}_installed")
+    discard execCmd(fmt"rm -rfv /var/forge/world/{PKG}")
+
+
 if OP == "install":
     install()
+elif OP == "remove":
+    remove()
+else:
+    echo fmt"Error: Unknown operation '{OP}'"
