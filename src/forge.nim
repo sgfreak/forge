@@ -23,7 +23,7 @@ let URL = fmt"{REPO}/{PKG}.tar.gz"
 let SEPARATOR= "----------------------------------------"
 
 createDir("/var/forge/world")
-discard execProcess(fmt"mkdir -p {TMP}/{PKG}")
+createDir(fmt"{TMP}/{PKG}")
 
 proc install() =
     echo "Downloading source."
@@ -83,10 +83,13 @@ proc install() =
 proc remove() =
     let tbr = readFile(fmt"/var/forge/world/{PKG}_installed").splitLines()
     for item in tbr:
-        discard execCmd(fmt"rm -rfv {item}")
+        if dirExists(item):
+          removeDir(item)
+        elif fileExists(item):
+          removeFile(item)
     echo "Deregestering from world set."
-    discard execCmd(fmt"rm -rfv /var/forge/world/{PKG}_installed")
-    discard execCmd(fmt"rm -rfv /var/forge/world/{PKG}")
+    removeFile(fmt"/var/forge/world/{PKG}_installed")
+    removeFile(fmt"/var/forge/world/{PKG}")
 
 
 if OP == "install":
