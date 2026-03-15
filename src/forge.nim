@@ -1,5 +1,9 @@
 import os, osproc, strformat, httpclient, strutils, posix
+stdout.flushFile()
 
+if getuid() != 0:
+  stderr.writeLine("You need to be a superuser to run the forge package manager.")
+  quit(1)
 const
   TMP = "/tmp/hypernova"
   SEPARATOR = "----------------------------------------"
