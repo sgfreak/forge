@@ -1,4 +1,4 @@
-import os, osproc, strformat, httpclient, strutils, posix
+import os, osproc, strformat, httpclient, strutils, posix, re
 stdout.flushFile()
 
 if getuid() != 0:
@@ -7,6 +7,7 @@ if getuid() != 0:
 const
   TMP = "/tmp/hypernova"
   SEPARATOR = "----------------------------------------"
+  VALID_PKG_PATTERN = re"^[a-zA-Z0-9][a-zA0-9._-]*$"
 
 if paramCount() == 0:
     echo """Usage: forge <operation> <package>
@@ -26,6 +27,15 @@ let OP = PARAMS[0]
 let PKGS = PARAMS[1..^1]
 
 createDir("/var/forge/world")
+
+proc validatePkgName(name: string): bool =
+    ## Reject anything that could be used for path traversal or injection.
+    if name.len == 0 or name.len > 128:
+      return false
+    if ".." in name or "/" in name or "\\" in name:
+      return false
+
+    return name.match(VALID_PKG_PATTERN)
 
 proc install(name: string) =
     echo "Downloading source."
