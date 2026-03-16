@@ -21,10 +21,8 @@ const
 let PKG_RE = re("^[a-zA-Z0-9][a-zA0-9._-]*$")
 
 
-if checkCanExecute():
-    printUsage()
-    programExit("Cannot execute forge")
-
+if not checkCanExecute(): 
+  programExit("Cannot execute: insufficient permissions or no operation specified.")
 
 let
     CMDLINE     = commandLineParams()
@@ -33,7 +31,7 @@ let
 
 
 if OPERATION notin ["install", "remove", "list", "info"]:
-    programExit("Operation not supported: {OPERATION}")
+    programExit(fmt"Operation not supported: {OPERATION}")
     printUsage()
 
 
