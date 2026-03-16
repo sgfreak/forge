@@ -32,7 +32,6 @@ if OP notin ["install", "remove", "list", "info"]:
   quit(1)
 
 let PKGS = if paramCount() > 1: PARAMS[1..^1] else: @[]
-let REPO = readFile("/var/hypernova/repo").strip()
 createDir(WORLD_DIR)
 
 proc validatePkgName(name: string): bool =
