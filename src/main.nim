@@ -130,6 +130,31 @@ proc list() =
 
 
 
+proc info(name: string) =
+    let markerPath = WORLD_DIR / name
+    let installedPath = WORLD_DIR / (name & "_installed")
+
+    if not fileExists(markerPath):
+        consoleFail(fmt"{name} is not installed.")
+        return
+
+    consoleInfo(fmt"Package: {name}")
+
+    if fileExists(installedPath):
+        let files = readFile(installedPath).splitLines()
+        var fileCount = 0
+        for f in files:
+            if f.strip().len > 0:
+                inc fileCount
+        consoleInfo(fmt"Installed files: {fileCount}")
+        consoleDimSep()
+        for f in files:
+            let path = f.strip()
+            if path.len > 0:
+                echo "  ", path
+    else:
+        consoleWarn("No installed file manifest found.")
+
 proc remove(name: string) =
     let tbr = readFile(fmt"/var/forge/world/{name}_installed").splitLines()
     for item in tbr:
@@ -154,6 +179,9 @@ of "remove":
       remove(pkg)
 of "list":
   list()
+of "info":
+  for pkg in PKGS:
+    info(pkg)
 else:
     programExit("Operation not supported: {OPERATION}")
     printUsage()
