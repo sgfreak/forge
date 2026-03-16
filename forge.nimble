@@ -12,4 +12,4 @@ import std/strformat
 
 task release, "Build release binary":
     for b in bin:
-        selfExec &"c -d:release -d:strip -o:{b} {srcDir}/{b}.nim"
+        selfExec &"c -d:release -d:strip -d:ssl -o:{b} {srcDir}/{b}.nim"
