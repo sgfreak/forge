@@ -105,7 +105,7 @@ proc install(name: string) =
 
     info("Extracting source.\n")
 
-    extractAll(pkgsrc, workdir)
+    extractAll(workdir, pkgsrc)
     success("Source extracted.")
 
     if fileExists(fmt"{TMP}/{name}/depends"):
