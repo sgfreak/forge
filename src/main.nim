@@ -6,17 +6,17 @@
 # the copyright notice to indicate your changes
 import std/[posix, os, osproc, strformat, strutils, httpclient, re, times]
 import zippy/tarballs
-import "console", "handler"
+import "console", "handler", "lock"
 
 
 when not defined(debug):
     {.push optimization:speed, checks:off, warnings:off.}
 
-
 const
     TEMP_DIR    = "/tmp/forge"
     WORLD_DIR   = "/var/forge/world"
     REPO_DIR    = "/var/forge/repo"
+    LOCK_PATH   = TEMP_DIR / "forge.lock"
 
 let PKG_RE = re("^[a-zA-Z0-9][a-zA0-9._-]*$")
 
@@ -50,22 +50,7 @@ proc validatePkgName(name: string): bool =
 
 let lockPath = TEMP_DIR / "forge.lock"
 
-proc acquireLock() =
-  createDir(TEMP_DIR)
-  if fileExists(lockPath):
-    let age = getTime() - getLastModificationTime(lockPath)
-    if age.inHours < 1:
-      consoleFail("Another forge process is running (lockfile exists).")
-      consoleWarn("If this is stale, remove " & lockPath)
-      programExit("Forge already running")
-    else:
-      consoleWarn("Removing stale lockfile.")
-      removeFile(lockPath)
-  writeFile(lockPath, $getCurrentProcessId())
 
-proc releaseLock() =
-  if fileExists(lockPath):
-    removeFile(lockPath)
 
 proc install(name: string) =
     consoleInfo(fmt"Downloading source for {name}")
@@ -144,19 +129,13 @@ proc remove(name: string) =
 
 case OPERATION
 of "install":
-  acquireLock()
-  try:
+  withLock(LOCK_PATH):
     for pkg in PKGS:
       install(pkg)
-  finally:
-    releaseLock()
 of "remove":
-  acquireLock()
-  try:
+  withLock(LOCK_PATH):
     for pkg in PKGS:
       remove(pkg)
-  finally:
-      releaseLock()
 else:
     programExit("Operation not supported: {OPERATION}")
     printUsage()
