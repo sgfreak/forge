@@ -107,7 +107,7 @@ proc install(name: string) =
 
     extractAll(pkgsrc, workdir)
     success("Source extracted.")
-
+    echo fmt"Looking for {workdir}/{name}/depends"
     if fileExists(fmt"{workdir}/{name}/depends"):
         for dep in lines(fmt"{workdir}/{name}/depends"):
             let i = dep.strip()
