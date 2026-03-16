@@ -106,7 +106,7 @@ proc install(name: string) =
         consoleFail("Build failed.")
         programExit("Build error")
 
-    let dirs = "/bin /sbin /usr/bin /usr/sbin /usr/include /usr/share /usr/lib /usr/lib64 /usr/local/bin /usr/local/lib /etc /lib /lib64"
+    let dirs = "/bin /sbin /usr/bin /usr/sbin /usr/include /usr/share /usr/lib /usr/lib64 /usr/local/bin /usr/local/lib /etc /lib /lib64 /var/forge/glibc-compat"
     let installLog = fmt"/var/forge/world/{name}_installed"
     consoleInfo("Tracking installed files...")
     discard execCmd(fmt"find {dirs} -newer {timeMarker} ! -type d 2>/dev/null > {installLog}")
