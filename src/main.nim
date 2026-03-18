@@ -44,14 +44,6 @@ proc install(name: string) =
 
     let workdir = TEMP_DIR / name
     let pkgsrc = fmt"{TEMP_DIR}/{name}.tar.gz"
-    proc cleanUp() =
-        consoleInfo("Cleaning up")
-        if dirExists(workdir):
-            removeDir(workdir)
-        if fileExists(pkgsrc):
-            removeFile(pkgsrc)
-        if fileExists(LOCK_PATH):
-            removeFile(LOCK_PATH)
 
     let client = newHttpClient()
     client.downloadFile(fmt"{REPO_DATA}/{name}.tar.gz", pkgsrc)
@@ -79,7 +71,6 @@ proc install(name: string) =
               install(i)
             except Exception as e:
               consoleFail(fmt"Failed to install dependency {i}: {e.msg}")
-              cleanUp()
 
               programExit("Dependency error")
     else:
@@ -98,7 +89,6 @@ proc install(name: string) =
     consoleDimSep()
 
     if execCmd(fmt"cd {TEMP_DIR}/{name} && sh build.sh") != 0:
-        cleanUp()
         consoleFail("Build failed.")
         programExit("Build error")
 
@@ -120,7 +110,7 @@ proc install(name: string) =
 
     writeFile(fmt"/var/forge/world/{name}", "")
     consoleOkay(fmt"{name} has been installed successfully.")
-    cleanUp()
+    
 
 proc list() =
     var count = 0
@@ -181,6 +171,7 @@ of "install":
   withLock(LOCK_PATH):
     for pkg in PKGS:
       install(pkg)
+      removeDir(fmt"{TEMP_DIR}")
 of "remove":
   withLock(LOCK_PATH):
     for pkg in PKGS:
