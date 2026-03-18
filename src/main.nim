@@ -45,6 +45,7 @@ proc install(name: string) =
     let workdir = TEMP_DIR / name
     let pkgsrc = fmt"{TEMP_DIR}/{name}.tar.gz"
     proc cleanUp() =
+        consoleInfo("Cleaning up")
         if dirExists(workdir):
             removeDir(workdir)
         if fileExists(pkgsrc):
@@ -168,7 +169,8 @@ proc remove(name: string) =
         if path.len == 0: continue
         if fileExists(path) or symlinkExists(path): # changed that cuz remove script literally removed my /usr/bin
           removeFile(path)
-          echo "Removed: ", path
+          consoleOkay(fmt"Removed: {path}")
+
     consoleInfo("Deregestering from world set.")
     removeFile(fmt"/var/forge/world/{name}_installed")
     removeFile(fmt"/var/forge/world/{name}")
