@@ -77,7 +77,18 @@ proc install(name: string) =
       consoleInfo("No dependencies found.")
 
     consoleDimSep()
+    stdout.write(fmt"Do you want to edit the build script for {name}? [y/N]: ")
+    stdout.flushFile()
 
+    let answer = try: stdin.readLine().toLowerAscii() except: "n"
+    if answer in ["y", "yes", "ye", "yea", "yy"]:
+        let editor = getEnv("EDITOR", "busybox vi")
+        let buildPath = fmt"{workdir}/build.sh"
+        if fileExists(buildPath):
+            consoleInfo(fmt"Editing {buildPath} with {editor}..")
+            discard execCmd(fmt"{editor} {buildPath}")
+        else:
+            consoleWarn("build.sh script not found, are you sure this is a forge package?")
     consoleInfo("Building package.")
     consoleDimSep()
 
